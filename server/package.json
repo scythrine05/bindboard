@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "dist/server.js",
   "scripts": {
-    "preinstall": "npm install --only=dev",
     "start": "node dist/server.js",
     "dev": "nodemon src/server.js",
     "build": "babel src -d dist",
