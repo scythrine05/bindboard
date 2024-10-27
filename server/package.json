@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "dist/server.js",
   "scripts": {
-    "start": "node src/server.js",
+    "preinstall": "npm install --only=dev",
+    "start": "node dist/server.js",
     "dev": "nodemon src/server.js",
     "build": "babel src -d dist",
     "test": "echo \"Error: no test specified\" && exit 1"
