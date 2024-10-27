@@ -18,7 +18,7 @@ const router = (socket: Socket) =>
   ]);
 
 const App: React.FC = () => {
-  const socket = useSocket("http://localhost:5000");
+  const socket = useSocket(import.meta.env.VITE_SOCKET_URL);
 
   if (!socket) return <div>Loading...</div>;
   return <RouterProvider router={router(socket)} />;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Canvas, Modal, InputSwitch, Sidebar, Toolbar } from "../components";
+import { Canvas, Modal, Sidebar, Toolbar } from "../components";
 import { Socket } from "socket.io-client";
 import { useParams, useNavigate } from "react-router-dom";
 import { getOrCreateUserData, updateUserData } from "../utils";
@@ -163,7 +163,11 @@ const Room: React.FC<RoomProps> = ({ socket }) => {
                     <input
                       type="checkbox"
                       onChange={(e) =>
-                        handleWrtingPermission(e, userData.userId, viewer.userId)
+                        handleWrtingPermission(
+                          e,
+                          userData.userId,
+                          viewer.userId
+                        )
                       }
                       checked={viewer.isWriter}
                     />
