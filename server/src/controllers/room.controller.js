@@ -1,75 +1,76 @@
 const { updateViewers } = require("../utils/socket.util");
-
-const rooms = {};
+const { redisClient, del, hSet, hGetAll } = require("../configs/redisClient");
+const { EXPIRE_TIME } = require("../utils/constants");
 
 const handleRoomEvents = (io, socket) => {
   //Create Room Event
-  socket.on("create-room", ({ roomId, userData }) => {
-    rooms[roomId] = {
-      owner: userData.userId,
-      users: [userData],
-    };
-    socket.join(roomId);
-    socket.emit("is-owner", { isOwner: true });
-    updateViewers(io, roomId, rooms);
-    console.log(`Room ${roomId} created by user ${userData.userId}`);
-  });
-
-  //Check Rooom Event
-  socket.on("check-room", (roomId, callback) => {
-    if (rooms[roomId]) {
-      callback({ exists: true });
-    } else {
-      callback({ exists: false });
+  socket.on("create-room", async ({ roomId, userData }) => {
+    const roomKey = `room:${roomId}`;
+    try {
+      await hSet(roomKey, "owner", userData.userId);
+      await hSet(roomKey, "users", [userData]);
+      await hSet(roomKey, "writers", []);
+      await hSet(roomKey, "writeData", []);
+      await redisClient.expire(roomKey, EXPIRE_TIME);
+      socket.join(roomId);
+      socket.emit("is-owner", { isOwner: true });
+      await updateViewers(io, roomId);
+      console.log(`Room ${roomId} created by user ${userData.userId}`);
+    } catch (err) {
+      console.error("Error creating room in Redis:", err);
     }
   });
 
+  //Check Rooom Event
+  socket.on("check-room", async (roomId, callback) => {
+    const roomExists = await redisClient.exists(`room:${roomId}`);
+    callback({ exists: roomExists === 1 });
+  });
+
   //Join Room Event
-  socket.on("join-room", ({ roomId, userData }) => {
-    if (rooms[roomId]) {
-      if (
-        !rooms[roomId].users.some((user) => user.userId === userData.userId)
-      ) {
-        rooms[roomId].users.push(userData);
+  socket.on("join-room", async ({ roomId, userData }) => {
+    const room = await hGetAll(`room:${roomId}`);
+    if (room && room.users) {
+      const users = room.users;
+      const writers = room.writers || [];
+
+      if (!users.some((user) => user.userId === userData.userId)) {
+        users.push(userData);
       }
+
+      await hSet(`room:${roomId}`, "users", users);
+
+      await redisClient.expire(`room:${roomId}`, EXPIRE_TIME);
+
       socket.join(roomId);
-      const isOwner = rooms[roomId].owner === userData.userId;
+      const isOwner = room.owner === userData.userId;
       socket.emit("is-owner", { isOwner });
-      rooms[roomId].writers &&
-        io.to(roomId).emit("is-writer", {
-          writerId: userData.userId,
-          isWriter: rooms[roomId].writers.includes(userData.userId),
-        });
-      rooms[roomId].writeData &&
-        socket.emit("load-data", rooms[roomId].writeData);
-      updateViewers(io, roomId, rooms);
-      console.log(`User ${userData.userId} joined room ${roomId}\n`);
+      io.to(roomId).emit("is-writer", {
+        writerId: userData.userId,
+        isWriter: writers.includes(userData.userId),
+      });
+      room.writeData && socket.emit("load-data", room.writeData);
+      await updateViewers(io, roomId);
+      console.log(`User ${userData.userId} joined room ${roomId}`);
     }
   });
 
   //Update Display Name
-  socket.on("update-display-name", ({ roomId, userData }) => {
-    if (rooms[roomId]) {
-      if (userData && userData.userId) {
-        const userIndex = rooms[roomId].users.findIndex(
-          (user) => user.userId === userData.userId
+  socket.on("update-display-name", async ({ roomId, userData }) => {
+    const room = await hGetAll(`room:${roomId}`);
+    if (room && room.users) {
+      const users = room.users;
+      const userIndex = users.findIndex(
+        (user) => user.userId === userData.userId
+      );
+      if (userIndex !== -1) {
+        users[userIndex].displayName = userData.displayName;
+        await hSet(`room:${roomId}`, "users", users);
+        console.log(
+          `User ${userData.userId} set their display name to ${userData.displayName}`
         );
-        if (userIndex !== -1) {
-          rooms[roomId].users[userIndex].displayName = userData.displayName;
-          console.log(
-            `User ${userData.userId} set their display name to ${userData.displayName}`
-          );
-          updateViewers(io, roomId, rooms);
-        } else {
-          console.error(
-            `User with userId ${userData.userId} not found in room ${roomId}`
-          );
-        }
-      } else {
-        console.error("Invalid userData received:", userData);
+        await updateViewers(io, roomId);
       }
-    } else {
-      console.error(`Room ${roomId} does not exist`);
     }
   });
 
@@ -78,31 +79,34 @@ const handleRoomEvents = (io, socket) => {
   });
 
   //Write
-  socket.on("write", (data) => {
+  socket.on("write", async (data) => {
     const { roomId, writeData, userData } = data;
-    if (
-      rooms[roomId] &&
-      (rooms[roomId].owner === userData.userId ||
-        (rooms[roomId].writers &&
-          rooms[roomId].writers.includes(userData.userId)))
-    ) {
-      if (!rooms[roomId].writeData) {
-        rooms[roomId].writeData = [];
+    const room = await hGetAll(`room:${roomId}`);
+    if (room && room.users) {
+      const isOwner = room.owner === userData.userId;
+      const writers = room.writers || [];
+
+      if (isOwner || writers.includes(userData.userId)) {
+        const currentWriteData = room.writeData || [];
+        currentWriteData.push(writeData);
+        await hSet(`room:${roomId}`, "writeData", currentWriteData);
+
+        socket.to(roomId).emit("write-user", userData.displayName);
+        socket.to(roomId).emit("write", writeData);
       }
-      rooms[roomId].writeData.push(writeData);
-      socket.to(roomId).emit("write-user", userData.displayName);
-      socket.to(roomId).emit("write", writeData);
     }
   });
 
   //Allow Writing
-  socket.on("allow-writing", ({ roomId, userId, writerId }) => {
-    if (rooms[roomId] && rooms[roomId].owner === userId) {
-      const writers = rooms[roomId].writers || [];
+  socket.on("allow-writing", async ({ roomId, userId, writerId }) => {
+    const room = await hGetAll(`room:${roomId}`);
+    if (room && room.owner === userId) {
+      const writers = room.writers || [];
       if (!writers.includes(writerId)) {
         writers.push(writerId);
-        rooms[roomId].writers = writers;
-        updateViewers(io, roomId, rooms);
+        await hSet(`room:${roomId}`, "writers", writers);
+
+        await updateViewers(io, roomId);
         io.to(roomId).emit("is-writer", { writerId, isWriter: true });
         console.log(`User ${userId} allowed writer ${writerId}`);
       }
@@ -110,14 +114,16 @@ const handleRoomEvents = (io, socket) => {
   });
 
   //Disallow Writing
-  socket.on("disallow-writing", ({ roomId, userId, writerId }) => {
-    if (rooms[roomId] && rooms[roomId].owner === userId) {
-      const writers = rooms[roomId].writers || [];
+  socket.on("disallow-writing", async ({ roomId, userId, writerId }) => {
+    const room = await hGetAll(`room:${roomId}`);
+    if (room && room.owner === userId) {
+      const writers = room.writers || [];
       const writerIndex = writers.indexOf(writerId);
       if (writerIndex !== -1) {
         writers.splice(writerIndex, 1);
-        rooms[roomId].writers = writers;
-        updateViewers(io, roomId, rooms);
+        await hSet(`room:${roomId}`, "writers", writers);
+
+        await updateViewers(io, roomId);
         io.to(roomId).emit("is-writer", { writerId, isWriter: false });
         console.log(`User ${userId} disallowed writer ${writerId}`);
       }
@@ -125,24 +131,26 @@ const handleRoomEvents = (io, socket) => {
   });
 
   //CLear Canvas
-  socket.on("clear-canvas", ({ roomId, userId }) => {
-    if (rooms[roomId] && rooms[roomId].owner === userId) {
-      rooms[roomId].writeData = [];
+  socket.on("clear-canvas", async ({ roomId, userId }) => {
+    const room = await hGetAll(`room:${roomId}`);
+    if (room && room.owner === userId) {
+      await hSet(`room:${roomId}`, "writeData", []);
       io.to(roomId).emit("clear-canvas");
     }
   });
 
   //Leave Room
-  socket.on("leave-room", ({ roomId, userId }) => {
-    if (rooms[roomId]) {
-      rooms[roomId].users = rooms[roomId].users.filter(
-        (user) => user.userId !== userId
-      );
-      if (rooms[roomId].users.length > 0) {
-        io.to(roomId).emit("update-viewers", rooms[roomId].users);
+
+  socket.on("leave-room", async ({ roomId, userId }) => {
+    const room = await hGetAll(`room:${roomId}`);
+    if (room && room.users) {
+      const users = room.users.filter((user) => user.userId !== userId);
+      if (users.length > 0) {
+        await hSet(`room:${roomId}`, "users", users);
+        io.to(roomId).emit("update-viewers", users);
       } else {
-        console.log(`Room deleted`);
-        delete rooms[roomId];
+        await del(`room:${roomId}`);
+        console.log(`Room ${roomId} deleted`);
       }
       socket.leave(roomId);
       console.log(`User ${userId} left room ${roomId}`);
