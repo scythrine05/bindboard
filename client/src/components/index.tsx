@@ -3,12 +3,17 @@ import Modal from "./Modal";
 import SidebarComponent from "./Sidebar";
 import Canvas from "./Canvas";
 import Toolbar from "./Toolbar";
+import InputTextComponent from "./InputText";
+import { PrimaryBtn } from "./Button";
 
+import "../styles/components.style.css";
 
 export {
-    InputSwitchComponent as InputSwitch,
-    Modal,
-    SidebarComponent as Sidebar,
-    Canvas,
-    Toolbar
-  };
+  PrimaryBtn,
+  InputSwitchComponent as InputSwitch,
+  Modal,
+  SidebarComponent as Sidebar,
+  Canvas,
+  Toolbar,
+  InputTextComponent as InputText,
+};

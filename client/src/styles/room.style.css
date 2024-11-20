@@ -1,0 +1,29 @@
+.displayname-modal {
+  display: flex;
+  flex-direction: column;
+}
+
+.displayname-modal form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.displayname-modal form > div {
+  margin-top: 10px;
+}
+
+.displayname-modal-note {
+  color: #808080;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.displayname-modal-error{
+    color: #808080;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+}

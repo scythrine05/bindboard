@@ -2,9 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Canvas, Modal, Sidebar, Toolbar } from "../components";
 import { Socket } from "socket.io-client";
 import { useParams, useNavigate } from "react-router-dom";
+import { InputText, PrimaryBtn as Button } from "../components";
+
 import { getOrCreateUserData, updateUserData } from "../utils";
+import { ErrorIcon, NoteIcon } from "../assets/icons";
 
 import { UserDataTypes } from "../types";
+
+import "../styles/room.style.css";
 
 interface RoomProps {
   socket: Socket;
@@ -177,23 +182,43 @@ const Room: React.FC<RoomProps> = ({ socket }) => {
           ))}
       </Sidebar>
       <Modal
+        header="Type display name"
         visible={modalVisible}
         onHide={() => {
           if (!modalVisible) return;
           setModalVisible(false);
         }}
       >
-        <div>
+        <div className="displayname-modal">
           <form onSubmit={handleDisplayNameSubmit}>
-            <input
-              type="text"
+            <InputText
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Enter your display name"
             />
-            <button type="submit">enter</button>
+            <div className="displayname-modal-error">
+              {error && (
+                <div>
+                  <ErrorIcon
+                    style={{ fontSize: "1.2em", marginRight: "5px" }}
+                  />
+                </div>
+              )}
+              {error}
+            </div>
+            <div>
+              <Button content="Enter Canvas" type="submit" />
+            </div>
           </form>
-          <div>{error}</div>
+          <div className="displayname-modal-note">
+            <div>
+              <NoteIcon style={{ fontSize: "1.2em", marginRight: "5px" }} />
+            </div>
+            <p>
+              The given name would be displayed as your identification in the
+              room
+            </p>
+          </div>
         </div>
       </Modal>
       <div>{writeUser && <>{writeUser} is Writing</>}</div>
@@ -203,8 +228,6 @@ const Room: React.FC<RoomProps> = ({ socket }) => {
           setColor={setColor}
           setThickness={setThickness}
           setTool={setTool}
-          // toggleTheme={toggleTheme}
-          // theme={theme}
         />
       )}
       <button onClick={() => setSidebarVisible(true)}>Users</button>

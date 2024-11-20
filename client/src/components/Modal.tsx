@@ -5,12 +5,19 @@ interface ModalProps {
   visible: boolean;
   onHide: () => void;
   children?: React.ReactNode;
+  header: string;
 }
 
-const Modal: React.FC<ModalProps> = ({ visible, onHide, children }) => {
+const Modal: React.FC<ModalProps> = ({ header, visible, onHide, children }) => {
   return (
     <div>
-      <Dialog header="Header" visible={visible} onHide={onHide} closable={false}>
+      <Dialog
+        draggable={false}
+        header={header}
+        visible={visible}
+        onHide={onHide}
+        closable={false}
+      >
         {children}
       </Dialog>
     </div>

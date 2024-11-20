@@ -5,6 +5,7 @@ import { Socket } from "socket.io-client";
 import Landing from "./pages/Landing";
 import Room from "./pages/Room";
 
+import "./App.css";
 const router = (socket: Socket) =>
   createBrowserRouter([
     {

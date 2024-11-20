@@ -1,0 +1,67 @@
+header {
+  padding: 10px;
+}
+
+header > div {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.landing-container > div {
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.landing-text {
+  text-align: center;
+  width: 75%;
+}
+
+.landing-text h1 {
+  font-size: 60px;
+}
+
+.landing-options {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.landing-options > div {
+  margin: 0 10px;
+}
+
+.landing-options form {
+  display: flex;
+}
+
+.landing-options > div {
+  margin: 0 10px;
+}
+
+.landing-options form > div {
+  margin: 0 10px;
+}
+
+.landing-error {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #808080;
+  display: flex;
+}
+
+footer {
+  float: right;
+  padding: 5px 20px;
+  font-weight: 500;
+}
+
+footer div {
+  background-color: #e2e5de;
+  padding: 8px;
+  border-radius: 5px;
+  color: #000;
+}

@@ -1,4 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
+import { Divider } from "primereact/divider";
+
+import {
+  EraserIcon,
+  PencilIcon,
+  ThickIcon1,
+  ThickIcon2,
+  ThickIcon3,
+} from "../assets/icons";
+import { ToolbarBtn, ToolbarColorBtn } from "./Button";
+import { COLORS } from "../utils/contants";
+
+import "../styles/toolbar.style.css";
 
 interface ToolbarProps {
   setThickness: (value: number) => void;
@@ -11,31 +24,84 @@ const Toolbar: React.FC<ToolbarProps> = ({
   setColor,
   setTool,
 }) => {
+  const [activeThickness, setActiveThickness] = useState<number | null>(8);
+  const [activeTool, setActiveTool] = useState<string | null>("pencil");
+  const [activeColor, setActiveColor] = useState<string | null>(COLORS.BLACK);
+
   return (
     <div className="toolbar">
       <label>
-        Brush Thickness:
-        <input
-          type="range"
-          min="1"
-          max="20"
-          defaultValue="5"
-          onChange={(e) => setThickness(Number(e.target.value))}
+        <ToolbarBtn
+          onClick={() => {
+            setThickness(4);
+            setActiveThickness(4);
+          }}
+          content={<ThickIcon1 style={{ width: "25px", height: "25px" }} />}
+          className={activeThickness === 4 ? "toolbar-active-btn" : ""}
         />
       </label>
       <label>
-        Brush Color:
-        <input
-          type="color"
-          defaultValue="#000000"
-          onChange={(e) => setColor(e.target.value)}
+        <ToolbarBtn
+          onClick={() => {
+            setThickness(8);
+            setActiveThickness(8);
+          }}
+          content={<ThickIcon2 style={{ width: "25px", height: "25px" }} />}
+          className={activeThickness === 8 ? "toolbar-active-btn" : ""}
         />
       </label>
       <label>
-        <button onClick={() => setTool("pencil")}>Pencil</button>
+        <ToolbarBtn
+          onClick={() => {
+            setThickness(12);
+            setActiveThickness(12);
+          }}
+          content={<ThickIcon3 style={{ width: "25px", height: "25px" }} />}
+          className={activeThickness === 12 ? "toolbar-active-btn" : ""}
+        />
+      </label>
+      <Divider layout="vertical" />
+      <label>
+        <ToolbarBtn
+          onClick={() => {
+            setTool("pencil");
+            setActiveTool("pencil");
+          }}
+          content={
+            <PencilIcon
+              style={{ width: "25px", height: "25px", color: "#000" }}
+            />
+          }
+          className={activeTool === "pencil" ? "toolbar-active-btn" : ""}
+        />
       </label>
       <label>
-        <button onClick={() => setTool("eraser")}>Eraser</button>
+        <ToolbarBtn
+          onClick={() => {
+            setTool("eraser");
+            setActiveTool("eraser");
+          }}
+          content={
+            <EraserIcon
+              style={{ width: "25px", height: "25px", color: "#000" }}
+            />
+          }
+          className={activeTool === "eraser" ? "toolbar-active-btn" : ""}
+        />
+      </label>
+      <Divider layout="vertical" />
+      <label>
+        {Object.values(COLORS).map((color) => (
+          <ToolbarColorBtn
+            key={color}
+            color={color}
+            onClick={() => {
+              setColor(color);
+              setActiveColor(color);
+            }}
+            className={activeColor === color ? "toolbar-active-color-btn" : ""}
+          />
+        ))}
       </label>
     </div>
   );
