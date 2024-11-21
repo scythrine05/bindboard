@@ -1,16 +1,18 @@
-import InputSwitchComponent from "./InputSwitch";
+import ToggleBtn from "./ToggleBtn";
 import Modal from "./Modal";
 import SidebarComponent from "./Sidebar";
 import Canvas from "./Canvas";
 import Toolbar from "./Toolbar";
 import InputTextComponent from "./InputText";
-import { PrimaryBtn } from "./Button";
+import { PrimaryBtn, OptionsBtn, SecondaryBtn } from "./Button";
 
 import "../styles/components.style.css";
 
 export {
   PrimaryBtn,
-  InputSwitchComponent as InputSwitch,
+  OptionsBtn,
+  ToggleBtn,
+  SecondaryBtn,
   Modal,
   SidebarComponent as Sidebar,
   Canvas,

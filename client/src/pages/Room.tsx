@@ -1,11 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { Canvas, Modal, Sidebar, Toolbar } from "../components";
+import {
+  Canvas,
+  Modal,
+  Sidebar,
+  Toolbar,
+  InputText,
+  PrimaryBtn as Button,
+  OptionsBtn,
+  ToggleBtn,
+  PrimaryBtn,
+  SecondaryBtn,
+} from "../components";
+import { Divider } from "primereact/divider";
 import { Socket } from "socket.io-client";
-import { useParams, useNavigate } from "react-router-dom";
-import { InputText, PrimaryBtn as Button } from "../components";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import {} from "../components";
 
 import { getOrCreateUserData, updateUserData } from "../utils";
-import { ErrorIcon, NoteIcon } from "../assets/icons";
+import {
+  UserIcon,
+  ErrorIcon,
+  NoteIcon,
+  ExitIcon,
+  ClearIcon,
+  OwnerIcon,
+  ShareIcon,
+  WriterIcon,
+} from "../assets/icons";
 
 import { UserDataTypes } from "../types";
 
@@ -42,8 +63,9 @@ const Room: React.FC<RoomProps> = ({ socket }) => {
   const [tool, setTool] = useState("pencil");
 
   //Components State
-  const [modalVisible, setModalVisible] = useState(true);
+  const [displayNameModalVisible, setDisplayNameModalVisible] = useState(true);
   const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [shareModalVisible, setShareModalVisible] = useState(false);
 
   //Error
   const [error, setError] = useState("");
@@ -52,8 +74,13 @@ const Room: React.FC<RoomProps> = ({ socket }) => {
   //Writing User
   const [writeUser, setWriteUser] = useState("");
 
+  //Share link copy
+  const [shareLinkCopied, setShareLinkCopied] = useState(false);
+
   const { roomId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const fullURL = `${window.location.origin}${location.pathname}${location.search}${location.hash}`;
   const userData: UserDataTypes = getOrCreateUserData();
 
   useEffect(() => {
@@ -119,23 +146,29 @@ const Room: React.FC<RoomProps> = ({ socket }) => {
       updateUserData(displayName);
       const updatedUserData: UserDataTypes = getOrCreateUserData();
       socket.emit("update-display-name", { roomId, userData: updatedUserData });
-      setModalVisible(false);
+      setDisplayNameModalVisible(false);
     } else {
       setError("Please enter a valid display name");
     }
   };
 
   const handleWrtingPermission = (
-    e: React.FormEvent,
+    value: boolean,
     userId: string,
     writerId: string
   ) => {
-    const isChecked = (e.target as HTMLInputElement).checked;
     if (isOwner) {
-      isChecked
+      value
         ? socket.emit("allow-writing", { roomId, userId, writerId })
         : socket.emit("disallow-writing", { roomId, userId, writerId });
     }
+  };
+
+  const handleShareLinkCopy = () => {
+    navigator.clipboard.writeText(fullURL).then(() => {
+      setShareLinkCopied(true);
+      setTimeout(() => setShareLinkCopied(false), 10000);
+    });
   };
 
   return (
@@ -147,46 +180,49 @@ const Room: React.FC<RoomProps> = ({ socket }) => {
           setSidebarVisible(false);
         }}
       >
-        <h3>Current Viewers</h3>
-        {roomData &&
-          roomData.viewers.map((viewer) => (
-            <li key={viewer.userId}>
-              <div>
-                <span>
-                  {viewer.userId === userData.userId
-                    ? "You"
-                    : viewer.displayName}
-                </span>
-                {viewer.userId === roomData.ownerId
-                  ? "(Admin)"
-                  : viewer.isWriter
-                  ? "(Writer)"
-                  : null}
-                <br />
-                {isOwner &&
-                  (viewer.userId === userData.userId ? null : (
-                    <input
-                      type="checkbox"
-                      onChange={(e) =>
-                        handleWrtingPermission(
-                          e,
-                          userData.userId,
-                          viewer.userId
-                        )
-                      }
-                      checked={viewer.isWriter}
-                    />
-                  ))}
+        <div className="sidebar-wrapper">
+          <h2>Active users</h2>
+          {roomData &&
+            roomData.viewers.map((viewer) => (
+              <div key={viewer.userId}>
+                <li>
+                  <div>
+                    <span>
+                      {viewer.userId === userData.userId
+                        ? "You"
+                        : viewer.displayName}
+                    </span>
+                    {viewer.userId === roomData.ownerId ? (
+                      <OwnerIcon style={{ marginLeft: "10px" }} />
+                    ) : viewer.isWriter ? (
+                      <WriterIcon style={{ marginLeft: "10px" }} />
+                    ) : null}
+                  </div>
+                  {isOwner &&
+                    (viewer.userId === userData.userId ? null : (
+                      <ToggleBtn
+                        onChange={(e) =>
+                          handleWrtingPermission(
+                            e.value,
+                            userData.userId,
+                            viewer.userId
+                          )
+                        }
+                        checked={viewer.isWriter}
+                      />
+                    ))}
+                </li>
+                <Divider layout="horizontal" />
               </div>
-            </li>
-          ))}
+            ))}
+        </div>
       </Sidebar>
       <Modal
         header="Type display name"
-        visible={modalVisible}
+        visible={displayNameModalVisible}
         onHide={() => {
-          if (!modalVisible) return;
-          setModalVisible(false);
+          if (!displayNameModalVisible) return;
+          setDisplayNameModalVisible(false);
         }}
       >
         <div className="displayname-modal">
@@ -195,6 +231,7 @@ const Room: React.FC<RoomProps> = ({ socket }) => {
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="Enter your display name"
+              max={20}
             />
             <div className="displayname-modal-error">
               {error && (
@@ -207,7 +244,7 @@ const Room: React.FC<RoomProps> = ({ socket }) => {
               {error}
             </div>
             <div>
-              <Button content="Enter Canvas" type="submit" />
+              <Button content="Enter canvas" type="submit" />
             </div>
           </form>
           <div className="displayname-modal-note">
@@ -216,13 +253,59 @@ const Room: React.FC<RoomProps> = ({ socket }) => {
             </div>
             <p>
               The given name would be displayed as your identification in the
-              room
+              canvas
             </p>
           </div>
         </div>
       </Modal>
-      <div>{writeUser && <>{writeUser} is Writing</>}</div>
-      {isOwner && <button onClick={handleClearCanvas}>Clear Canvas</button>}
+      <Modal
+        header="Share canvas"
+        visible={shareModalVisible}
+        onHide={() => {
+          if (!shareModalVisible) return;
+          setShareModalVisible(false);
+        }}
+        dismissableMask={true}
+      >
+        <div className="share-modal-wrapper">
+          <p>Copy the link and share the canvas.</p>
+          <InputText value={`${fullURL}`} disabled={true} />
+          {shareLinkCopied ? (
+            <SecondaryBtn
+              onClick={handleShareLinkCopy}
+              content={"Copied link"}
+            />
+          ) : (
+            <PrimaryBtn onClick={handleShareLinkCopy} content={"Copy link"} />
+          )}
+        </div>
+      </Modal>
+      {writeUser && (
+        <div className="current-writer">{writeUser} is writing</div>
+      )}
+      {isOwner && (
+        <OptionsBtn
+          onClick={handleClearCanvas}
+          style={{ top: 0, right: "8em" }}
+          content={
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                color: "#000000",
+              }}
+            >
+              <ClearIcon
+                style={{
+                  fontSize: "1.2em",
+                  marginRight: "10px",
+                }}
+              />
+              Clear canvas
+            </div>
+          }
+        />
+      )}
       {(isOwner || isWriter) && (
         <Toolbar
           setColor={setColor}
@@ -230,8 +313,33 @@ const Room: React.FC<RoomProps> = ({ socket }) => {
           setTool={setTool}
         />
       )}
-      <button onClick={() => setSidebarVisible(true)}>Users</button>
-      <button onClick={handleLeaveRoom}>Leave Room</button>
+      <OptionsBtn
+        style={{ top: 0, right: "1em" }}
+        onClick={() => setSidebarVisible(true)}
+        content={<UserIcon style={{ fontSize: "1.2em", color: "#000000" }} />}
+      />
+      <OptionsBtn
+        style={{ top: 0, right: "4em" }}
+        onClick={() => setShareModalVisible(true)}
+        content={<ShareIcon style={{ fontSize: "1.2em", color: "#000000" }} />}
+      />
+      <OptionsBtn
+        style={{ top: 0, left: "1em" }}
+        onClick={handleLeaveRoom}
+        content={
+          <div
+            style={{ display: "flex", alignItems: "center", color: "#000000" }}
+          >
+            <ExitIcon
+              style={{
+                fontSize: "1.2em",
+                marginRight: "10px",
+              }}
+            />
+            Leave canvas
+          </div>
+        }
+      />
       {socket && (
         <Canvas
           tool={tool}

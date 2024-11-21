@@ -6,9 +6,16 @@ interface ModalProps {
   onHide: () => void;
   children?: React.ReactNode;
   header: string;
+  dismissableMask?: boolean;
 }
 
-const Modal: React.FC<ModalProps> = ({ header, visible, onHide, children }) => {
+const Modal: React.FC<ModalProps> = ({
+  header,
+  visible,
+  onHide,
+  dismissableMask,
+  children,
+}) => {
   return (
     <div>
       <Dialog
@@ -17,6 +24,7 @@ const Modal: React.FC<ModalProps> = ({ header, visible, onHide, children }) => {
         visible={visible}
         onHide={onHide}
         closable={false}
+        dismissableMask={dismissableMask}
       >
         {children}
       </Dialog>

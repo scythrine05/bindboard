@@ -12,6 +12,10 @@ interface ColorButtonProps extends Omit<ButtonProps, "content"> {
   color: string;
 }
 
+interface OptionButtonProps extends ButtonProps {
+  style?: React.CSSProperties;
+}
+
 export const PrimaryBtn: React.FC<ButtonProps> = ({
   content,
   type,
@@ -24,7 +28,24 @@ export const PrimaryBtn: React.FC<ButtonProps> = ({
       onClick={onClick}
       type={type}
       {...props}
-      className="primary-btn"
+    >
+      {content}
+    </Button>
+  );
+};
+
+export const SecondaryBtn: React.FC<ButtonProps> = ({
+  content,
+  type,
+  onClick,
+  ...props
+}) => {
+  return (
+    <Button
+      severity="secondary"
+      onClick={onClick}
+      type={type}
+      {...props}
     >
       {content}
     </Button>
@@ -63,9 +84,29 @@ export const ToolbarColorBtn: React.FC<ColorButtonProps> = ({
       onClick={onClick}
       type={type}
       {...props}
-      style={{ backgroundColor: color }}
       className={`toolbar-color-btn ${className}`.trim()} // Ensure toolbar-color-btn is always present
-      rounded
-    />
+    >
+      <div style={{ backgroundColor: color }} />
+    </Button>
+  );
+};
+
+export const OptionsBtn: React.FC<OptionButtonProps> = ({
+  content,
+  type,
+  onClick,
+  style,
+  ...props
+}) => {
+  return (
+    <Button
+      onClick={onClick}
+      type={type}
+      {...props}
+      className="options-btn"
+      style={style}
+    >
+      {content}
+    </Button>
   );
 };

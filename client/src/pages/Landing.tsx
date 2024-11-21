@@ -50,7 +50,7 @@ const LandingPage: React.FC<LandingProps> = ({ socket }) => {
       </header>
       <div>
         <div className="landing-text">
-          <h1>Bind your Canvas</h1>
+          <h1>Bind your canvas</h1>
           <p>
             Redis-powered with efficient data caching and socket programming,
             Bindboard supports live canvas collaboration with real-time user
@@ -63,9 +63,9 @@ const LandingPage: React.FC<LandingProps> = ({ socket }) => {
           <div>
             <Button
               content={
-                <div style={{ display: "flex", alignItems: 'center', }}>
+                <div style={{ display: "flex", alignItems: "center" }}>
                   <CreateIcon style={{ fontSize: "1em", marginRight: "5px" }} />
-                  New Canvas
+                  New canvas
                 </div>
               }
               onClick={handleCreateRoom}
@@ -90,16 +90,16 @@ const LandingPage: React.FC<LandingProps> = ({ socket }) => {
               </div>
             </div>
             <div>
-              <Button content={<div>Join Canvas</div>} type="submit" />
+              <Button content={<div>Join canvas</div>} type="submit" />
             </div>
           </form>
         </div>
       </div>
       <footer>
         <Link to="https://github.com/scythrine05/bindboard" target="_blank">
-          <div>
-            <GithubIcon style={{ fontSize: "1em", marginRight: "5px" }} />
-            Contribute to Github
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <GithubIcon style={{ fontSize: "1.4em", marginRight: "5px" }} />
+            contribute to github
           </div>
         </Link>
       </footer>

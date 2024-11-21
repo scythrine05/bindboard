@@ -24,7 +24,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
   setColor,
   setTool,
 }) => {
-  const [activeThickness, setActiveThickness] = useState<number | null>(8);
+  const [activeThickness, setActiveThickness] = useState<number | null>(4);
   const [activeTool, setActiveTool] = useState<string | null>("pencil");
   const [activeColor, setActiveColor] = useState<string | null>(COLORS.BLACK);
 
@@ -60,7 +60,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
           className={activeThickness === 12 ? "toolbar-active-btn" : ""}
         />
       </label>
-      <Divider layout="vertical" />
+      <Divider className="toolbar-divider" layout="vertical" />
+      <Divider className="toolbar-divider-horizontal" layout="horizontal" />
       <label>
         <ToolbarBtn
           onClick={() => {
@@ -89,7 +90,8 @@ const Toolbar: React.FC<ToolbarProps> = ({
           className={activeTool === "eraser" ? "toolbar-active-btn" : ""}
         />
       </label>
-      <Divider layout="vertical" />
+      <Divider className="toolbar-divider" layout="vertical" />
+      <Divider className="toolbar-divider-horizontal" layout="horizontal" />
       <label>
         {Object.values(COLORS).map((color) => (
           <ToolbarColorBtn

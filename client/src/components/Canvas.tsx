@@ -138,7 +138,7 @@ const Canvas: React.FC<CanvasProps> = ({
     context.prevX = undefined; // Reset prevX
     context.prevY = undefined; // Reset prevY
     context.closePath();
-    socket.emit("stop-write-user", {roomId});
+    socket.emit("stop-write-user", { roomId });
   };
 
   return (
@@ -148,6 +148,7 @@ const Canvas: React.FC<CanvasProps> = ({
       onMouseMove={write}
       onMouseUp={stopWriting}
       onMouseLeave={stopWriting}
+      onMouseOut={stopWriting}
     />
   );
 };

@@ -13,7 +13,12 @@ const SidebarComponent: React.FC<SidebarProps> = ({
   children,
 }) => {
   return (
-    <Sidebar visible={visible} position="right" onHide={onHide}>
+    <Sidebar
+      visible={visible}
+      position="right"
+      onHide={onHide}
+      showCloseIcon={false}
+    >
       {children}
     </Sidebar>
   );

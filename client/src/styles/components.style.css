@@ -1,9 +1,13 @@
-.primary-btn {
-  padding: 10px;
+.p-button {
   font-size: 14px;
+  padding: 10px;
   font-weight: 500;
 }
 
+.p-togglebutton {
+  margin-top: 10px;
+  align-self: flex-start;
+}
 
 .toolbar-btn {
   padding: 5px;
@@ -11,22 +15,33 @@
 }
 
 .toolbar-color-btn {
-  width: 1.2rem;
-  height: 1.2rem;
   border: none;
   padding: 5px;
   margin: 0 5px;
   box-sizing: border-box;
+  background-color: transparent;
+}
+
+.toolbar-color-btn div {
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 50%;
+}
+
+.options-btn {
+  background-color: rgba(128, 128, 128, 0.2);
+  border: none;
+  padding: 10px;
+  position: fixed;
 }
 
 .toolbar-active-btn {
   background-color: rgba(128, 128, 128, 0.2);
-
   border-radius: 4px;
 }
 
 .toolbar-active-color-btn {
-  border: 3px solid rgba(128, 128, 128, 0.6);
+  background-color: rgba(128, 128, 128, 0.2);
 }
 
 .input-field {
@@ -38,4 +53,3 @@
   outline: transparent;
   box-shadow: none;
 }
-
