@@ -6,7 +6,8 @@ interface InputTextProps {
   placeholder?: string;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   max?: number;
-  disabled?: boolean;
+  readOnly?: boolean;
+  
 }
 
 const InputTextComponent: React.FC<InputTextProps> = ({
@@ -14,7 +15,7 @@ const InputTextComponent: React.FC<InputTextProps> = ({
   value,
   onChange,
   max,
-  disabled,
+  readOnly,
 }) => {
   return (
     <InputText
@@ -23,7 +24,7 @@ const InputTextComponent: React.FC<InputTextProps> = ({
       onChange={onChange}
       className="input-field"
       maxLength={max}
-      disabled={disabled}
+      readOnly={readOnly}
     />
   );
 };

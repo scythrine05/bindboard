@@ -137,6 +137,7 @@ const handleRoomEvents = (io, socket) => {
       await hSet(`room:${roomId}`, "writeData", []);
       io.to(roomId).emit("clear-canvas");
     }
+    console.log("no its cleared");
   });
 
   //Leave Room

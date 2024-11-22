@@ -269,7 +269,7 @@ const Room: React.FC<RoomProps> = ({ socket }) => {
       >
         <div className="share-modal-wrapper">
           <p>Copy the link and share the canvas.</p>
-          <InputText value={`${fullURL}`} disabled={true} />
+          <InputText value={`${fullURL}`} readOnly={true} />
           {shareLinkCopied ? (
             <SecondaryBtn
               onClick={handleShareLinkCopy}
