@@ -4,7 +4,9 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  text-align: center;
 }
+
 
 .loading-wrapper > p {
   font-size: 24px;
