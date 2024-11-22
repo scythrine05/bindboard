@@ -64,7 +64,6 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  width: 25em;
 }
 
 .share-modal-wrapper button {

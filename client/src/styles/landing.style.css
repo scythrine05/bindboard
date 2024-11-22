@@ -1,3 +1,21 @@
+.loading-wrapper, .mobile-view-wrapper{
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.loading-wrapper > p {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.loading-wrapper .long-loading-msg{
+  font-size: 14px;
+}
+
+
 header {
   padding: 10px;
 }

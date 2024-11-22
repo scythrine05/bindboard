@@ -13,7 +13,7 @@ import {
 } from "../components";
 import { Divider } from "primereact/divider";
 import { Socket } from "socket.io-client";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {} from "../components";
 
 import { getOrCreateUserData, updateUserData } from "../utils";
@@ -79,8 +79,6 @@ const Room: React.FC<RoomProps> = ({ socket }) => {
 
   const { roomId } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
-  const fullURL = `${window.location.origin}${location.pathname}${location.search}${location.hash}`;
   const userData: UserDataTypes = getOrCreateUserData();
 
   useEffect(() => {
@@ -163,11 +161,17 @@ const Room: React.FC<RoomProps> = ({ socket }) => {
         : socket.emit("disallow-writing", { roomId, userId, writerId });
     }
   };
-
   const handleShareLinkCopy = () => {
-    navigator.clipboard.writeText(fullURL).then(() => {
+    if (!roomId) {
+      console.error("Room ID is undefined or empty.");
+      return;
+    }
+  
+    navigator.clipboard.writeText(roomId).then(() => {
       setShareLinkCopied(true);
       setTimeout(() => setShareLinkCopied(false), 10000);
+    }).catch((error) => {
+      console.error("Failed to copy the room ID:", error);
     });
   };
 
@@ -268,15 +272,15 @@ const Room: React.FC<RoomProps> = ({ socket }) => {
         dismissableMask={true}
       >
         <div className="share-modal-wrapper">
-          <p>Copy the link and share the canvas.</p>
-          <InputText value={`${fullURL}`} readOnly={true} />
+          <p>Copy the code and share the canvas.</p>
+          <InputText value={`${roomId}`} readOnly={true} />
           {shareLinkCopied ? (
             <SecondaryBtn
               onClick={handleShareLinkCopy}
-              content={"Copied link"}
+              content={"Copied code"}
             />
           ) : (
-            <PrimaryBtn onClick={handleShareLinkCopy} content={"Copy link"} />
+            <PrimaryBtn onClick={handleShareLinkCopy} content={"Copy code"} />
           )}
         </div>
       </Modal>
