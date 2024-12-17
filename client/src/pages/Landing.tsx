@@ -52,10 +52,9 @@ const LandingPage: React.FC<LandingProps> = ({ socket }) => {
         <div className="landing-text">
           <h1>Bind your canvas</h1>
           <p>
-            Redis-powered with efficient data caching and socket programming,
             Bindboard supports live canvas collaboration with real-time user
             roles and persistent drawing data. Built for fast performance and
-            seamless interaction, it’s a dynamic tool for collaborative
+            seamless interaction, it's a dynamic tool for collaborative
             creativity.
           </p>
         </div>
