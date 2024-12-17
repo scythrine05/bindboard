@@ -31,7 +31,7 @@ const App: React.FC = () => {
       setIsMobile(window.innerWidth <= 1000);
     };
 
-    checkMobile(); // Initial check
+    checkMobile();
     window.addEventListener("resize", checkMobile);
 
     return () => {

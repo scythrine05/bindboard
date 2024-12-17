@@ -83,6 +83,7 @@ const Room: React.FC<RoomProps> = ({ socket }) => {
 
   useEffect(() => {
     if (socket) {
+      if (socket.connected) socket.emit("join-room", { roomId, userData });
       socket.on("is-owner", ({ isOwner }) => setIsOwner(isOwner));
       socket.on("write-user", (user) => setWriteUser(user));
       socket.on("update-viewers", ({ users, ownerId }) => {
@@ -107,9 +108,6 @@ const Room: React.FC<RoomProps> = ({ socket }) => {
         ({ writerId, isWriter }) =>
           writerId === userData.userId && setIsWriter(isWriter)
       );
-      socket.on("connect", () => {
-        socket.emit("join-room", { roomId, userData });
-      });
 
       return () => {
         socket.off("is-owner");
@@ -166,13 +164,16 @@ const Room: React.FC<RoomProps> = ({ socket }) => {
       console.error("Room ID is undefined or empty.");
       return;
     }
-  
-    navigator.clipboard.writeText(roomId).then(() => {
-      setShareLinkCopied(true);
-      setTimeout(() => setShareLinkCopied(false), 10000);
-    }).catch((error) => {
-      console.error("Failed to copy the room ID:", error);
-    });
+
+    navigator.clipboard
+      .writeText(roomId)
+      .then(() => {
+        setShareLinkCopied(true);
+        setTimeout(() => setShareLinkCopied(false), 10000);
+      })
+      .catch((error) => {
+        console.error("Failed to copy the room ID:", error);
+      });
   };
 
   return (

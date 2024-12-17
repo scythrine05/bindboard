@@ -1,4 +1,4 @@
-import { hGetAll } from "../configs/redisClient";
+const { hGetAll } = require("../controllers/redis.controller");
 
 const updateViewers = async (io, roomId) => {
   try {

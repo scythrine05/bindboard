@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { useEffect, useState } from "react";
+import { io, Socket } from "socket.io-client";
 
 const useSocket = (serverUrl: string) => {
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -8,18 +8,16 @@ const useSocket = (serverUrl: string) => {
   useEffect(() => {
     const newSocket = io(serverUrl);
 
-    // Update connection status
-    newSocket.on('connect', () => {
+    newSocket.on("connect", () => {
       setIsConnected(true);
     });
 
-    newSocket.on('disconnect', () => {
+    newSocket.on("disconnect", () => {
       setIsConnected(false);
     });
 
     setSocket(newSocket);
 
-    // Cleanup function to disconnect the socket when the component unmounts
     return () => {
       newSocket.disconnect();
     };

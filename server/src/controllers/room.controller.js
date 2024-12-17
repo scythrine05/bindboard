@@ -1,5 +1,6 @@
 const { updateViewers } = require("../utils/socket.util");
-const { redisClient, del, hSet, hGetAll } = require("../configs/redisClient");
+const { del, hSet, hGetAll } = require("./redis.controller");
+const redisClient = require('../configs/redis.config.js')
 const { EXPIRE_TIME } = require("../utils/constants");
 
 const handleRoomEvents = (io, socket) => {
@@ -137,7 +138,6 @@ const handleRoomEvents = (io, socket) => {
       await hSet(`room:${roomId}`, "writeData", []);
       io.to(roomId).emit("clear-canvas");
     }
-    console.log("no its cleared");
   });
 
   //Leave Room
