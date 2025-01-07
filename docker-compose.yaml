@@ -2,10 +2,7 @@ version: '3.8'
 
 services: 
   server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
-    image: server-app
+    image: scythrine05/bindboard-server:latest
     container_name: bindboard-node-server
     environment:
       NODE_ENV: production
@@ -13,13 +10,10 @@ services:
       - "4000:4000"
   
   client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
-    image: client-app
+    image: scythrine05/bindboard-client:latest
     container_name: bindboard-react-client
     ports:
-      - "3000:80"
+      - "3001:80"
     depends_on:
       - server
 
