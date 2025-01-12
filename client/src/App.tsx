@@ -7,6 +7,7 @@ import Loading from "./pages/Loading";
 import Landing from "./pages/Landing";
 import Room from "./pages/Room";
 import MobileView from "./pages/MobileView";
+import NotFound from "./pages/NotFound";
 
 import "./App.css";
 
@@ -19,6 +20,10 @@ const router = (socket: Socket) =>
     {
       path: "/board/:roomId",
       element: <Room socket={socket} />,
+    },
+    {
+      path: "*",
+      element: <NotFound />,
     },
   ]);
 

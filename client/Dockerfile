@@ -5,10 +5,9 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 RUN npm install
-ARG VITE_SOCKET_URL
-ENV VITE_SOCKET_URL=$VITE_SOCKET_URL
 
 COPY . .
+COPY .env.production /app/.env
 
 RUN npm run build
 
