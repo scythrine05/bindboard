@@ -1,50 +1,28 @@
-# React + TypeScript + Vite
+# Bindboard Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Bindboard (client) is the client side of the application which provides a digital canvas supporting various features.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Drawing Tools**:
+  - Draw on a blank canvas with different line thickness options.
+- **Eraser**:
+  - Remove parts of your drawing with an eraser tool.
+- **Color Picker**:
+  - Choose from multiple colors (e.g., black, red, blue, green) to customize your drawing.
+- **Canvas Controls**:
+  - **Clear Canvas**: Reset the canvas to start fresh.
+  - **Share Canvas**: Export or share your artwork easily.
+- **User Interaction**:
 
-## Expanding the ESLint configuration
+  - View a list of active users in real time.
+  - Assign specific roles to users, such as allowing or disallowing write access.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+  ## Technologies Used
 
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+- **React (TypeScript)**: Component-based front-end library.
+- **HTML Canvas**: Core drawing API for the canvas.
+- **CSS**: Custom styling for the application.
+- **Vite**: Fast and modern web bundler.
+- **PrimeReact**: UI component library for a consistent interface.
+- **Socket.IO (Client)**: Real-time communication for collaborative features.
